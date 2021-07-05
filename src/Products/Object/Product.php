@@ -65,7 +65,7 @@ final class Product
             "cantidad"              =>   $this->quantity,  
             "precio_costo"          =>   $this->price_cost, 
             "precio_venta"          =>   $this->price_sale, 
-            "porcentaje_ganancia"   =>   $this->percentage_profit,
+            "porcentaje_ganancia"   =>   0,
             "status"                =>   1
         );
 

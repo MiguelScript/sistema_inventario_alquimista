@@ -1,10 +1,10 @@
 <?php
 
-namespace Src\Sales\Services;
+namespace Src\Sales\Services\GetSales;
 
 
 use Src\Sales\Repository\SaleRepository;
-use Src\Sales\Services\GetSalesService;
+use Src\Sales\Services\GetSales\GetSalesService;
 use Src\Sales\Services\GetSales\GetSalesByStatusService;
 use Src\Sales\Services\GetSales\GetSalesBySearchService;
 use Src\Sales\Services\GetSales\GetSalesByStatusAndSearchService;
@@ -22,17 +22,18 @@ class GetSalesFactory
         $this->repository = $repository;
     }
 
-    public function __invoke(string $search, $status) : GetSalesService
+    public function __invoke($search, $status) : GetSalesService
     {
-        if ($search !== "" && $status !== "") {
+        //svar_dump($search);
+        if ($search != "" && $status != "") {
             //por una busqueda y un status
 
             return new GetSalesService(new GetSalesByStatusAndSearchService($this->repository, $status, $search));
-        } elseif ($search !== "" && $status == "") {
+        } elseif ($search != "" && $status == "") {
             //por una busqueda y todos los status
 
             return new GetSalesService(new GetSalesBySearchService($this->repository, $search));
-        } elseif ($search == "" && $status !== "") {
+        } elseif ($search == "" && $status != "") {
             //por un status
 
             return new GetSalesService(new GetSalesByStatusService($this->repository, $status));

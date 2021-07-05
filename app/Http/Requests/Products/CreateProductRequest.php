@@ -27,7 +27,7 @@ class CreateProductRequest extends FormRequest
             'nombre' => 'required',
             'cantidad' => 'required',
             'precio_costo' => 'required|min:0',
-            'porcentaje_ganancia' => 'required|min:0',
+            //'porcentaje_ganancia' => 'required|min:0',
         ];
     }
 }

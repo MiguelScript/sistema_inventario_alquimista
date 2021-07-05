@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Sales\CreateSaleRequest;
 use Src\Sales\Handler\CreateSaleHandler;
-
+use Illuminate\Http\Request;
 class CreateSaleController extends Controller
 {
     public function __construct(CreateSaleHandler $create_sale_handler)
@@ -13,7 +12,7 @@ class CreateSaleController extends Controller
         $this->create_sale_handler = $create_sale_handler;
     }
 
-    public function __invoke($request)
+    public function __invoke(Request $request)
     {
         $newSale = $this->create_sale_handler->__invoke($request);
 

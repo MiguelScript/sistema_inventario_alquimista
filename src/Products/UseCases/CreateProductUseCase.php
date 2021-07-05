@@ -37,6 +37,21 @@ class CreateProductUseCase
         $create_product_code_service = new CreateProductCodeService($this->repository);
         $codigo = $create_product_code_service->__invoke($product_id);
 
-        return $product_id;
+        return $this->setResponse($product_id);
+    }
+
+    public function setResponse($query)
+    {
+        if ($query) {
+            return [
+                'data' => $query,
+                'msg' => "se ha creado el producto exitosamente",
+            ];
+        } else {
+            return [
+                'data' => $query,
+                'msg' => "Ha ocurrido un error al crear el producto",
+            ];
+        }
     }
 }

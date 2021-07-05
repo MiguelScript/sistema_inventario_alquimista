@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\VentasController;
-use App\Http\Controllers\FolderController;
+use App\Http\Controllers\DollarRate\GetDollarRateController;
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -25,6 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 /* Route::post('/login', [AuthController::class, 'authenticate']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout']); */
+include("admin-routes/usuarios.php");
 
 
 Route::group([
@@ -38,7 +38,6 @@ Route::group([
     Route::get('/me', [AuthController::class, 'get_user']);
 });
 
-Route::get('/peruba', [FolderController::class, 'get_all']);
 
 
 Route::group(['middleware' => ['jwt.verify']], function () {
@@ -46,7 +45,10 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 
 
     include("admin-routes/productos.php");
+    include("admin-routes/ventas.php");
+    include("admin-routes/stats.php");
 
-
-    Route::post('/venta-crear', [VentasController::class, 'store']);
 });
+
+Route::get('/obtener-tasa-dolar-actual', [GetDollarRateController::class, '__invoke']);
+

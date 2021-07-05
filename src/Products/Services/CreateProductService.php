@@ -33,19 +33,4 @@ class CreateProductService
 
         return $this->repository->create($user);
     }
-
-    public function setResponse($query)
-    {
-        if ($query) {
-            return response([
-                'data' => $query,
-                'msg' => "se ha creado el usuario exitosamente",
-            ], 200);
-        } else {
-            return response([
-                'data' => $query,
-                'msg' => "Ha ocurrido un error al crear el usuario",
-            ], 400);
-        }
-    }
 }

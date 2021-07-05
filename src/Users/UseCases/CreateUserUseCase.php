@@ -3,32 +3,55 @@
 namespace Src\Users\UseCases;
 
 use Src\Users\Services\CreateUserService;
-use Src\Users\Repositories\UserRepository;
-use Src\Users\Object\User;
+use Src\Users\Services\FindUserByEmail;
+use Illuminate\Support\Facades\Hash;
+use Exception;
 
 class CreateUserUseCase
 {
 
-    protected $repository;
+    protected $create_users_service;
+    protected $find_user_by_email;
 
-    public function __construct(UserRepository $repository)
+    public function __construct(CreateUserService $create_users_service, FindUserByEmail  $find_user_by_email)
     {
-        $this->repository = $repository;
+        $this->create_users_service = $create_users_service;
+        $this->find_user_by_email = $find_user_by_email;
     }
 
     public function __invoke($request)
     {
-        $userName              = $request->input('name');
-        $userEmail             = $request->input('email');
-        $userPassword          = $request->input('password');
 
-        $create_users_service = new CreateUserService($this->repository);
-        $user_id = $create_users_service->__invoke(
-            $userName,
-            $userEmail,
-            $userPassword
-        );
+        try {
+            $userName              = $request->input('name');
+            $userLastName          = $request->input('last_name');
+            $userEmail             = $request->input('email');
+            $userPassword          = Hash::make($request->get('password'));
+            $role                  = $request->input('role');
 
-        return $user_id;
+            $already_exist = $this->find_user_by_email->__invoke($userEmail);
+            var_dump($already_exist);
+            /* if (!empty($already_exist)) {
+                throw new Exception("User Already Exist");
+            } */
+
+            $user_id = $this->create_users_service->__invoke(
+                $userName,
+                $userLastName,
+                $userEmail,
+                $userPassword,
+                $role
+            );
+
+            return response(['msg' => 'Se ha creado el usuaio', 'user' => $user_id], 201);
+        } catch (\Throwable $th) {
+
+            $response = array();
+            //var_dump($th);
+            if ($th->getMessage() == "User Already Exist") {
+                $response['msg'] = "Este usuario ya existe";
+            }
+            return response($response, 400);
+        }
     }
 }

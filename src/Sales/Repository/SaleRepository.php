@@ -4,6 +4,7 @@ namespace Src\Sales\Repository;
 
 use Src\Sales\Model\Sale;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class SaleRepository
 {
@@ -27,9 +28,23 @@ class SaleRepository
         return $this->model->all();
     }
 
+
+    public function get_last_sales($take)
+    {
+        return $this->model
+            ->take($take)
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
+
     public function get_sales_by_offset_and_limit($offset, $limit)
     {
-        return $this->model->skip($offset)->take($limit)->get();
+        return $this->model
+            ->skip($offset)
+            ->take($limit)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function get_count()
@@ -39,17 +54,30 @@ class SaleRepository
 
     public function get_sales_by_offset_and_limit_and_search($offset, $limit, $search)
     {
-        return $this->model->where('nombre', 'like', '%' . $search . '%')->skip($offset)->take($limit)->get();
+        return $this->model
+            ->where('codigo', 'like', '%' . $search . '%')
+            ->skip($offset)
+            ->take($limit)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function get_count_by_search($search)
     {
-        return $this->model->where('codigo', 'like', '%' . $search . '%')->get()->count();
+        return $this->model
+            ->where('codigo', 'like', '%' . $search . '%')
+            ->get()
+            ->count();
     }
 
     public function get_sales_by_offset_and_limit_and_status($offset, $limit, $status)
     {
-        return $this->model->where('status', '=', $status)->skip($offset)->take($limit)->get();
+        return $this->model
+            ->where('status', '=', $status)
+            ->skip($offset)
+            ->take($limit)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function get_count_by_status($status)
@@ -57,21 +85,24 @@ class SaleRepository
         return $this->model->where('status', '=', $status)->get()->count();
     }
 
-    public function get_sales_by_offset_and_limit_and_status_and_search($offset, $limit, $status ,$search)
+    public function get_sales_by_offset_and_limit_and_status_and_search($offset, $limit, $status, $search)
     {
         return $this->model
-                ->where('nombre', 'like', '%' . $search . '%')
-                ->where('status', '=', $status)
-                ->skip($offset)->take($limit)->get();
+            ->where('codigo', 'like', '%' . $search . '%')
+            ->where('status', '=', $status)
+            ->skip($offset)->take($limit)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
     public function get_count_by_status_and_search($status, $search)
     {
         return $this->model
-        ->where('status', '=', $status)->get()->count()
-        ->where('nombre', 'like', '%' . $search . '%');
+            ->where('status', '=', $status)
+            ->where('codigo', 'like', '%' . $search . '%')
+            ->get()->count();
     }
-    
+
     public function create($venta)
     {
         return $this->model->insertGetId($venta);
@@ -107,6 +138,27 @@ class SaleRepository
 
     public function get_products_from_sale($sale_id)
     {
-        # code...
+        return $this->model->select(
+            'productos.id as producto_id',
+            'productos.nombre as producto_nombre',
+            'productos_ventas.producto_cantidad as producto_cantidad_vendida',
+            'productos_ventas.producto_precio_unitario as producto_precio_unitario',
+            'productos.cantidad as producto_cantidad_inventario',
+        )
+            ->join('productos_ventas', 'productos_ventas.venta_id', '=', 'ventas.id')
+            ->join('productos', 'productos_ventas.producto_id', "=", 'productos.id')
+            ->where('ventas.id', '=', $sale_id)
+            ->get();
+    }
+
+    public function get_cantidad_productos_vendidos_and_monto_total_by_and_moth($month)
+    {
+        $query = DB::table('ventas')
+            ->join('productos_ventas', 'productos_ventas.venta_id', '=', 'ventas.id')
+            ->join('productos', 'productos_ventas.producto_id', "=", 'productos.id')
+            ->selectRaw('SUM(productos_ventas.producto_cantidad) as cantidad_productos_vendidos,SUM(productos_ventas.producto_precio_unitario) as monto_total_ventas')
+            //->where('pedidos.status =', 4);
+            ->whereRaw('MONTH(ventas.created_at)', $month)->first();
+        return $query;
     }
 }

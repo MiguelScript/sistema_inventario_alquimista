@@ -14,24 +14,24 @@ class AddProductsToVentaService
         $this->repository = $repository;
     }
 
-    public function __invoke(array $products, int $venta_id )
+    public function __invoke(array $products, int $venta_id)
     {
         $data = array();
 
         foreach ($products as $key => $product) {
             $item = array(
-                'producto_id' => $product->id, 
-                'producto_cantidad' => $product->cantidad, 
-                'producto_precio_unitario' => $product->precio_costo, 
-                'producto_porcentaje_ganacia' => $product->porcentaje_ganancia, 
-                'venta_id' => $venta_id, 
+                'producto_id' => $product->id,
+                'producto_cantidad' => $product->cantidad,
+                'producto_precio_unitario' => $product->precio_costo,
+                'producto_porcentaje_ganacia' => $product->porcentaje_ganancia,
+                'venta_id' => $venta_id,
             );
 
-            $data[] = $item;  
+            $data[] = $item;
         }
-        
+
         $add_products = $this->repository->insert_products($data, $venta_id);
-        
+
         return $add_products;
     }
 }

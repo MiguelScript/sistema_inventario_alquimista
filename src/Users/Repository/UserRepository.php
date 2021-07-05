@@ -1,12 +1,15 @@
 <?php
 
-namespace Src\Users\Repositories;
+namespace Src\Users\Repository;
 
 use Src\Users\Model\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
+    private $table = "users";
+    
     protected $model;
 
     /**
@@ -14,9 +17,9 @@ class UserRepository
      *
      * @param User $post
      */
-    public function __construct(User $model)
+    public function __construct()
     {
-        $this->model = $model;
+        $this->model = new User();
     }
 
     public function all()
@@ -26,12 +29,12 @@ class UserRepository
 
     public function get_users_by_offset_and_limit($offset, $limit)
     {
-        return $this->model->skip($offset)->take($limit)->get();
+        return $this->model->skip($offset)->take($limit)->orderBy('id', 'desc')->get();
     }
 
     public function get_users_by_offset_and_limit_and_search($offset, $limit, $search)
     {
-        return $this->model->where('nombre', 'like', '%' . $search . '%')->skip($offset)->take($limit)->get();
+        return $this->model->where('nombre', 'like', '%' . $search . '%')->skip($offset)->take($limit)->orderBy('id', 'desc')->get();
     }
 
     public function create($data)
@@ -57,5 +60,12 @@ class UserRepository
         }
 
         return $user;
+    }
+
+    public function find_by_email($email)
+    {
+        return DB::table($this->table)
+        ->where("email", '=', $email)
+        ->first();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Sales\Services;
+namespace Src\Sales\Services\GetSales;
 
 use Src\Sales\Services\GetSales\Interfaces\IGetSales;
 use Src\Sales\Services\GetSales\Interfaces\IGetSalesCount;
