@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route; 
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DollarRate\GetDollarRateController;
+use App\Http\Controllers\ProductsController;
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -49,6 +50,9 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     include("admin-routes/stats.php");
 
 });
+
+Route::apiResource('productos', ProductsController::class);
+
 
 Route::get('/obtener-tasa-dolar-actual', [GetDollarRateController::class, '__invoke']);
 
